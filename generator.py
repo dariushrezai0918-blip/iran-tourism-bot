@@ -7,6 +7,12 @@ from wiki import get_summary
 def generate_post():
     place = random.choice(WORLD_PLACES)
 
+info = get_place_info(place)
+
+post = format_post(info)
+
+print(post)
+
     data = get_summary(place["title"])
 
     if data:
