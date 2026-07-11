@@ -10,7 +10,7 @@ url = f"https://fa.wikipedia.org/api/rest_v1/page/summary/{quote(title)}"
 
     try:
         response = requests.get(url, timeout=15)
-
+response = requests.get(url, timeout=15)
         if response.status_code != 200:
             return None
 
