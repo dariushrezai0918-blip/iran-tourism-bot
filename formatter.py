@@ -1,21 +1,22 @@
 from config import HASHTAGS
 
-def format_post(title, country, text):
-
+def format_post(info):
     hashtags = "\n".join(HASHTAGS)
 
-    post = f"""
-🌍 {title}
+    post = f"""🌍 {info['title']}
 
-📍 کشور: {country}
+📍 کشور: {info['country']}
 
-📝 {text}
+📝 {info['description']}
 
 ━━━━━━━━━━━━━━
 
 🤔 آیا می‌دانستید؟
 
 این مکان یکی از معروف‌ترین جاذبه‌های گردشگری جهان است و هر سال میلیون‌ها نفر از آن بازدید می‌کنند.
+
+📚 مطالعه بیشتر:
+{info['wiki']}
 
 ━━━━━━━━━━━━━━
 
