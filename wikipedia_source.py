@@ -6,7 +6,7 @@ def get_summary(title):
     دریافت خلاصه مقاله از ویکی‌پدیای فارسی
     """
 
-    url = f"https://fa.wikipedia.org/api/rest_v1/page/summary/{title}"
+url = f"https://fa.wikipedia.org/api/rest_v1/page/summary/{quote(title)}"
 
     try:
         response = requests.get(url, timeout=15)
