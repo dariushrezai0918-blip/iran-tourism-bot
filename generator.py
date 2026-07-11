@@ -1,3 +1,5 @@
+from info_engine import get_place_info
+from formatter import format_post
 import random
 from world_places import WORLD_PLACES
 from wiki import get_summary
