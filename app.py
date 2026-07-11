@@ -1,1 +1,1 @@
-app.py
+print("Iran Tourism Bot Started")
