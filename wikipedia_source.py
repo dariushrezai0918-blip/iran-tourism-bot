@@ -1,5 +1,5 @@
 import requests
-
+from urllib.parse import quote
 
 def get_summary(title):
     """
