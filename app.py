@@ -1,9 +1,16 @@
+from flask import Flask
+from threading import Thread
 from generator import generate_post
 from publisher import publish
 import schedule
 import time
+import os
 
-print("🌍 ربات گردشگری جهان شروع شد...")
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Bot is running!"
 
 def job():
     print("در حال تولید پست جدید...")
@@ -13,15 +20,18 @@ def job():
     if post:
         publish(post)
     else:
-        print("❌ خطا در تولید محتوا")
+        print("خطا در تولید محتوا")
 
-# یک بار هنگام شروع اجرا شود
-job()
+def scheduler():
+    job()
+    schedule.every(6).hours.do(job)
 
-# هر ۶ ساعت یک بار اجرا شود
-schedule.every(6).hours.do(job)
+    while True:
+        schedule.run_pending()
+        time.sleep(30)
 
-# همیشه روشن بماند
-while True:
-    schedule.run_pending()
-    time.sleep(30)
+Thread(target=scheduler, daemon=True).start()
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
