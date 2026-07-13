@@ -4,23 +4,25 @@ from formatter import format_post
 
 def generate_post():
 
+    print("🔎 شروع دریافت از ویکی‌پدیا")
+
     place = get_random_place()
 
-    print("Wikipedia result:", place)
+    print("📌 نتیجه ویکی‌پدیا:", place)
 
     if not place:
-        print("❌ هیچ مکانی از ویکی‌پدیا دریافت نشد")
+        print("❌ اطلاعات دریافت نشد")
         return None
 
     info = {
-        "title": place["title"],
-        "description": place["description"],
+        "title": place.get("title", ""),
+        "description": place.get("description", ""),
         "image": place.get("image", ""),
         "wiki": place.get("wiki", "")
     }
 
     post = format_post(info)
 
-    print("Generated post:", post)
+    print("✅ پست ساخته شد")
 
     return post
