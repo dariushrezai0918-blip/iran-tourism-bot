@@ -1,12 +1,14 @@
-from rubika_bot_api.api import Robot
 
-TOKEN = "توکن_جدید_ربات"
+import requests
 
-bot = Robot(token=TOKEN)
+token = "توکن_روبیکا"
 
-@bot.on_message()
-def get_id(bot, message):
-    print("CHAT ID:", message.chat_id)
-    print("TEXT:", message.text)
+url = f"https://botapi.rubika.ir/v3/{token}/getUpdates"
 
-bot.run()
+data = {
+    "limit": 10
+}
+
+response = requests.post(url, json=data)
+
+print(response.text)
