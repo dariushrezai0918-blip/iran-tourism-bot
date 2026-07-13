@@ -58,7 +58,18 @@ def get_random_place():
     }
 
     try:
-        response = requests.get(url, params=params, timeout=10)
+    response = requests.get(
+        url,
+        params=params,
+        headers={
+            "User-Agent": "TourismBot/1.0"
+        },
+        timeout=10
+    )
+
+    print("📡 پاسخ ویکی‌پدیا دریافت شد")
+
+    data = response.json()
 
         print("Search status:", response.status_code)
 
