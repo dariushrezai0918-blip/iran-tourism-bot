@@ -3,7 +3,7 @@ from world_places import WORLD_PLACES
 from formatter import format_post
 
 def generate_post():
-    place = random.choice(WORLD_PLACES)
+    place = get_random_place()
 
     info = {
         "title": place["title"],
