@@ -1,5 +1,7 @@
 import random
-from world_places import WORLD_PLACES
+from wikipedia_source import get_random_place
+
+
 from formatter import format_post
 
 def generate_post():
