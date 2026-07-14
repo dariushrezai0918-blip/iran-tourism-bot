@@ -5,50 +5,57 @@ from publisher import publish
 import schedule
 import time
 import os
+from datetime import datetime
+
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def home():
-    return "Bot is running!"
+    return "Tourism Bot is running!"
 
 
 def job():
-    print("🚀 شروع تولید پست...")
+    print("⏰ اجرا:", datetime.now())
 
     try:
         post = generate_post()
 
-        print("📄 نتیجه generate_post:", post)
-
         if post:
             publish(post)
-            print("✅ پست با موفقیت ارسال شد")
+            print("✅ ارسال موفق")
         else:
-            print("❌ پست تولید نشد")
+            print("❌ پست ساخته نشد")
 
     except Exception as e:
-        print("🔥 خطا در job:", e)
+        print("🔥 خطا:", e)
+
 
 
 def scheduler():
-    print("⏰ Scheduler Started")
 
-    # اجرای اولیه
+    print("🚀 Scheduler شروع شد")
+
+    # اجرای اول
     job()
 
-    # برای تست هر یک دقیقه
-    schedule.every(1).minutes.do(job)
+    # هر ۶ ساعت
+    schedule.every(6).hours.do(job)
+
 
     while True:
         schedule.run_pending()
-        time.sleep(5)
+        time.sleep(30)
+
 
 
 Thread(target=scheduler, daemon=True).start()
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT",10000))
+    app.run(
+        host="0.0.0.0",
+        port=port
+        )
