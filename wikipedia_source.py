@@ -1,165 +1,135 @@
 import requests
 import random
 
-
 KEYWORDS = [
-    "برج تاریخی",
-    "قلعه تاریخی",
-    "کاخ تاریخی",
-    "معبد تاریخی",
-    "آبشار معروف",
-    "جزیره گردشگری",
-    "پارک ملی",
+    "جاذبه گردشگری",
     "میراث جهانی یونسکو",
-    "مکان گردشگری",
-    "جاذبه طبیعی",
-    "مکان گردشی",
-    "جاذبه های دیدنی"
-    
+    "قلعه",
+    "کاخ",
+    "موزه",
+    "پارک ملی",
+    "آبشار",
+    "دریاچه",
+    "کوه",
+    "جزیره",
+    "معبد",
+    "مسجد تاریخی",
+    "کلیسا",
+    "شهر تاریخی"
 ]
 
-
-BLOCK_WORDS = [
-    "فهرست",
-    "رده:",
-    "دسته:",
+# کلماتی که اگر داخل عنوان باشند رد می‌شوند
+BLACKLIST = [
+    "فیلم",
+    "مجموعه",
+    "سریال",
+    "بازیگر",
+    "شخص",
     "تمدن",
-    "تاریخچه",
-    "انواع",
-    "تعریف",
-    "مقاله",
-    "لیست"
+    "جنگ",
+    "دانشگاه",
+    "شرکت",
+    "باشگاه",
+    "انتخابات",
+    "کتاب",
+    "آلبوم",
+    "ترانه",
+    "فوتبال",
+    "روستا",
+    "استان",
+    "شهرستان"
 ]
-
-
-def is_valid_place(title, description):
-
-    text = title + " " + description
-
-    for word in BLOCK_WORDS:
-        if word in text:
-            return False
-
-    if len(description) < 150:
-        return False
-
-    return True
-
 
 
 def get_random_place():
 
-    keyword = random.choice(KEYWORDS)
+    print("🔎 شروع دریافت از ویکی‌پدیا")
 
-    print("🔍 جستجو:", keyword)
+    for _ in range(15):
 
-    url = "https://fa.wikipedia.org/w/api.php"
+        keyword = random.choice(KEYWORDS)
 
+        print("🔍 جستجو:", keyword)
 
-    params = {
-        "action": "query",
-        "list": "search",
-        "srsearch": keyword,
-        "format": "json",
-        "srlimit": 20
-    }
+        url = "https://fa.wikipedia.org/w/api.php"
 
+        params = {
+            "action": "query",
+            "list": "search",
+            "srsearch": keyword,
+            "format": "json",
+            "srlimit": 20
+        }
 
-    try:
+        try:
 
-        response = requests.get(
-            url,
-            params=params,
-            headers={
-                "User-Agent": "TourismBot"
-            },
-            timeout=10
-        )
+            response = requests.get(
+                url,
+                params=params,
+                headers={"User-Agent": "TourismBot"},
+                timeout=10
+            )
 
+            data = response.json()
 
-        data = response.json()
+            results = data["query"]["search"]
 
-        results = data["query"]["search"]
+            random.shuffle(results)
 
+            for item in results:
 
-        random.shuffle(results)
+                title = item["title"]
 
+                if any(word in title for word in BLACKLIST):
+                    continue
 
-        for item in results:
+                place = get_summary(title)
 
-            title = item["title"]
+                if not place:
+                    continue
 
-            place = get_summary(title)
-
-
-            if place:
-
-                if is_valid_place(
-                    place["title"],
+                text = (
+                    place["title"] +
                     place["description"]
-                ):
-                    print("✅ انتخاب شد:", place["title"])
-                    return place
+                ).lower()
 
+                if any(word in text for word in BLACKLIST):
+                    continue
 
+                if len(place["description"]) < 250:
+                    continue
 
-        return None
+                print("✅ انتخاب شد:", place["title"])
 
+                return place
 
+        except Exception as e:
+            print(e)
 
-    except Exception as e:
-
-        print("Wiki error:", e)
-        return None
-
-
+    return None
 
 
 def get_summary(title):
 
     url = f"https://fa.wikipedia.org/api/rest_v1/page/summary/{title}"
 
-
     try:
 
         r = requests.get(
             url,
-            headers={
-                "User-Agent": "TourismBot"
-            },
+            headers={"User-Agent": "TourismBot"},
             timeout=10
         )
 
-
-        if r.status_code != 200:
-            return None
-
-
         data = r.json()
 
-
         return {
-
-            "title": data.get("title",""),
-
-            "description":
-                data.get("extract",""),
-
-
-            "image":
-                data.get("thumbnail",{}).get("source",""),
-
-
-            "wiki":
-                data.get("content_urls",{})
-                .get("desktop",{})
-                .get("page","")
-
+            "title": data.get("title", ""),
+            "description": data.get("extract", ""),
+            "image": data.get("thumbnail", {}).get("source", ""),
+            "wiki": data.get("content_urls", {}).get("desktop", {}).get("page", "")
         }
 
-
     except Exception as e:
-
-        print("Summary error:", e)
-
+        print(e)
         return None
