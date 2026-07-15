@@ -8,18 +8,15 @@ def generate_post():
 
     place = get_random_place()
 
-    print("📌 نتیجه ویکی‌پدیا:", place)
+if place is None:
+    return None
 
-    if not place:
-        print("❌ اطلاعات دریافت نشد")
-        return None
-
-    info = {
-        "title": place.get("title", ""),
-        "description": place.get("description", ""),
-        "image": place.get("image", ""),
-        "wiki": place.get("wiki", "")
-    }
+info = {
+    "title": place["title"],
+    "description": place["description"],
+    "image": place["image"],
+    "wiki": place["wiki"]
+}
 
     post = format_post(info)
 
