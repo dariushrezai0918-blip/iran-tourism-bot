@@ -1,3 +1,4 @@
+from place_filter import is_place
 import requests
 import json
 import time
@@ -52,9 +53,13 @@ for keyword in KEYWORDS:
 
         for item in results:
 
-            places.append({
-                "title": item["title"]
-            })
+            title = item["title"]
+
+if is_place(title):
+
+    places.append({
+        "title": title
+    })
 
         offset += 50
 
