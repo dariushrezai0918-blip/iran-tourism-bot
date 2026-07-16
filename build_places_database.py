@@ -2,44 +2,68 @@ import requests
 import json
 import time
 
-URL = "https://www.wikidata.org/w/api.php"
-
 places = []
 
-for offset in range(0, 5000, 50):
+URL = "https://fa.wikipedia.org/w/api.php"
 
-    params = {
-        "action": "query",
-        "list": "search",
-        "srsearch": "haswbstatement:P31=Q839954",
-        "format": "json",
-        "srlimit": 50,
-        "sroffset": offset
-    }
+KEYWORDS = [
+    "میراث جهانی یونسکو",
+    "جاذبه گردشگری",
+    "بنای تاریخی",
+    "پارک ملی",
+    "کاخ",
+    "قلعه",
+    "موزه",
+    "آبشار",
+    "جزیره",
+    "غار",
+    "کوه",
+    "دریاچه"
+]
 
-    try:
+for keyword in KEYWORDS:
 
-        r = requests.get(URL, params=params, timeout=20)
+    print("جستجو:", keyword)
+
+    offset = 0
+
+    while offset <= 500:
+
+        params = {
+            "action": "query",
+            "list": "search",
+            "srsearch": keyword,
+            "format": "json",
+            "srlimit": 50,
+            "sroffset": offset
+        }
+
+        r = requests.get(URL, params=params)
 
         data = r.json()
 
         if "query" not in data:
-            continue
+            break
 
-        for item in data["query"]["search"]:
+        results = data["query"]["search"]
+
+        if len(results) == 0:
+            break
+
+        for item in results:
 
             places.append({
                 "title": item["title"]
             })
 
-        print(len(places))
+        offset += 50
 
         time.sleep(1)
 
-    except Exception as e:
-        print(e)
+print("تعداد کل:", len(places))
 
 with open("places.json", "w", encoding="utf8") as f:
+
     json.dump(places, f, ensure_ascii=False, indent=2)
 
-print("Done")
+print("ذخیره شد.")
