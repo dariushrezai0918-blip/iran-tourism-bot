@@ -3,11 +3,49 @@ import requests
 import json
 import time
 
+
+def get_summary(title):
+
+    url = f"https://fa.wikipedia.org/api/rest_v1/page/summary/{title}"
+
+    try:
+
+        r = requests.get(
+            url,
+            headers={
+                "User-Agent": "TourismBot"
+            },
+            timeout=15
+        )
+
+        if r.status_code != 200:
+            return None
+
+        data = r.json()
+
+        return {
+
+            "title": data.get("title", ""),
+            "description": data.get("extract", ""),
+            "image": data.get("thumbnail", {}).get("source", ""),
+            "wiki": data.get("content_urls", {})
+                        .get("desktop", {})
+                        .get("page", "")
+
+        }
+
+    except Exception as e:
+
+        print(e)
+        return None
+
+
 places = []
 
 URL = "https://fa.wikipedia.org/w/api.php"
 
 KEYWORDS = [
+
     "میراث جهانی یونسکو",
     "جاذبه گردشگری",
     "بنای تاریخی",
@@ -20,6 +58,7 @@ KEYWORDS = [
     "غار",
     "کوه",
     "دریاچه"
+
 ]
 
 for keyword in KEYWORDS:
@@ -31,12 +70,14 @@ for keyword in KEYWORDS:
     while offset <= 500:
 
         params = {
+
             "action": "query",
             "list": "search",
             "srsearch": keyword,
             "format": "json",
             "srlimit": 50,
             "sroffset": offset
+
         }
 
         r = requests.get(URL, params=params)
@@ -55,11 +96,15 @@ for keyword in KEYWORDS:
 
             title = item["title"]
 
-if is_place(title):
+            if is_place(title):
 
-    places.append({
-        "title": title
-    })
+                info = get_summary(title)
+
+                if info:
+
+                    places.append(info)
+
+                    print(info["title"])
 
         offset += 50
 
