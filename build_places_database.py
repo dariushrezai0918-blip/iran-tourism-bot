@@ -117,3 +117,18 @@ with open("places.json", "w", encoding="utf8") as f:
     json.dump(places, f, ensure_ascii=False, indent=2)
 
 print("ذخیره شد.")
+unique_places = []
+
+seen = set()
+
+for place in places:
+
+    if place["title"] not in seen:
+
+        seen.add(place["title"])
+
+        unique_places.append(place)
+
+places = unique_places
+
+print("بعد از حذف موارد تکراری:", len(places))
