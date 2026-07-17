@@ -1,3 +1,4 @@
+from wikidata_source import get_location
 from place_filter import is_place
 import requests
 import json
@@ -99,12 +100,25 @@ for keyword in KEYWORDS:
             if is_place(title):
 
                 info = get_summary(title)
-
                 if info:
 
-                    places.append(info)
+    if len(info["description"]) < 250:
+        continue
 
-                    print(info["title"])
+    places.append(info)
+
+    print(info["title"])
+if info:
+
+    location = get_location(title)
+
+    if location:
+
+        info.update(location)
+
+    places.append(info)
+
+    print(info["title"])
 
         offset += 50
 
