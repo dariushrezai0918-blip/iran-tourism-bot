@@ -1,5 +1,6 @@
-from wikidata_source import get_location
+from category import get_category
 from place_filter import is_place
+
 import requests
 import json
 import time
@@ -27,8 +28,12 @@ def get_summary(title):
         return {
 
             "title": data.get("title", ""),
+
             "description": data.get("extract", ""),
-            "image": data.get("thumbnail", {}).get("source", ""),
+
+            "image": data.get("thumbnail", {})
+                        .get("source", ""),
+
             "wiki": data.get("content_urls", {})
                         .get("desktop", {})
                         .get("page", "")
@@ -37,13 +42,16 @@ def get_summary(title):
 
     except Exception as e:
 
-        print(e)
+        print("Wiki error:", e)
+
         return None
+
 
 
 places = []
 
 URL = "https://fa.wikipedia.org/w/api.php"
+
 
 KEYWORDS = [
 
@@ -65,10 +73,8 @@ KEYWORDS = [
     "محوطه باستانی",
 
     "پارک ملی",
-    "پارک طبیعی",
     "جنگل",
     "دریاچه",
-    "رودخانه",
     "آبشار",
     "غار",
     "جزیره",
@@ -77,15 +83,12 @@ KEYWORDS = [
     "بیابان",
     "ساحل",
 
-    "گردشگری ایران",
-    "گردشگری جهان",
-    "جاذبه طبیعی",
-    "جاذبه فرهنگی",
     "اثر باستانی",
     "اثر تاریخی",
     "میراث فرهنگی"
 
 ]
+
 
 for keyword in KEYWORDS:
 
@@ -93,7 +96,9 @@ for keyword in KEYWORDS:
 
     offset = 0
 
+
     while offset <= 5000:
+
 
         params = {
 
@@ -106,59 +111,97 @@ for keyword in KEYWORDS:
 
         }
 
-        r = requests.get(URL, params=params)
 
-        data = r.json()
+        try:
+
+            r = requests.get(
+                URL,
+                params=params,
+                timeout=15
+            )
+
+            data = r.json()
+
+        except:
+
+            break
+
+
 
         if "query" not in data:
             break
 
+
+
         results = data["query"]["search"]
+
+
 
         if len(results) == 0:
             break
 
+
+
         for item in results:
+
 
             title = item["title"]
 
-            if is_place(title):
 
-                info = get_summary(title)
-                if info:
+            if not is_place(title):
+                continue
 
-    if len(info["description"]) < 250:
-        continue
 
-    places.append(info)
 
-    print(info["title"])
-if info:
+            info = get_summary(title)
 
-    location = get_location(title)
 
-    if location:
 
-        info.update(location)
+            if not info:
+                continue
 
-    places.append(info)
 
-    print(info["title"])
+
+            # حذف متن های خیلی کوتاه
+            if len(info["description"]) < 250:
+                continue
+
+
+
+            # اضافه کردن دسته بندی
+            info["category"] = get_category(
+                info["title"],
+                info["description"]
+            )
+
+
+
+            places.append(info)
+
+
+
+            print(
+                info["title"],
+                "=>",
+                info["category"]
+            )
+
+
 
         offset += 50
 
+
         time.sleep(1)
 
-print("تعداد کل:", len(places))
 
-with open("places.json", "w", encoding="utf8") as f:
 
-    json.dump(places, f, ensure_ascii=False, indent=2)
 
-print("ذخیره شد.")
-unique_places = []
+# حذف موارد تکراری
+
+unique = []
 
 seen = set()
+
 
 for place in places:
 
@@ -166,8 +209,33 @@ for place in places:
 
         seen.add(place["title"])
 
-        unique_places.append(place)
+        unique.append(place)
 
-places = unique_places
 
-print("بعد از حذف موارد تکراری:", len(places))
+
+places = unique
+
+
+
+print("----------------")
+print("تعداد کل:", len(places))
+print("----------------")
+
+
+
+with open(
+    "places.json",
+    "w",
+    encoding="utf8"
+) as f:
+
+    json.dump(
+        places,
+        f,
+        ensure_ascii=False,
+        indent=2
+    )
+
+
+
+print("بانک مکان ها ساخته شد.")
