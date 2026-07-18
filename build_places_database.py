@@ -1,6 +1,6 @@
 from category import get_category
 from place_filter import is_place
-
+from keywords import KEYWORDS
 import requests
 import json
 import time
@@ -52,43 +52,7 @@ places = []
 
 URL = "https://fa.wikipedia.org/w/api.php"
 
-
-KEYWORDS = [
-
-    "میراث جهانی یونسکو",
-    "جاذبه گردشگری",
-    "بنای تاریخی",
-    "کاخ",
-    "قلعه",
-    "آرامگاه",
-    "مسجد تاریخی",
-    "کلیسا",
-    "معبد",
-    "موزه",
-    "برج",
-    "پل تاریخی",
-    "باغ تاریخی",
-    "کاروانسرا",
-    "شهر تاریخی",
-    "محوطه باستانی",
-
-    "پارک ملی",
-    "جنگل",
-    "دریاچه",
-    "آبشار",
-    "غار",
-    "جزیره",
-    "کوه",
-    "دره",
-    "بیابان",
-    "ساحل",
-
-    "اثر باستانی",
-    "اثر تاریخی",
-    "میراث فرهنگی"
-
-]
-
+from keywords import KEYWORDS
 
 for keyword in KEYWORDS:
 
