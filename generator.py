@@ -1,29 +1,26 @@
 import random
 
 from places import PLACES
+from history import exists, add_place
 from wikipedia_source import get_summary
 from formatter import format_post
 
 
 def generate_post():
 
-    title = random.choice(PLACES)
+    random.shuffle(PLACES)
 
-    print("📍 مکان انتخاب شده:", title)
+    for title in PLACES:
 
-    place = get_summary(title)
+        if exists(title):
+            continue
 
-    if place is None:
-        print("❌ اطلاعات این مکان پیدا نشد")
-        return None
+        place = get_summary(title)
 
-    info = {
-        "title": place["title"],
-        "description": place["description"],
-        "image": place["image"],
-        "wiki": place["wiki"]
-    }
+        if place:
 
-    post = format_post(info)
+            add_place(title)
 
-    return post
+            return format_post(place)
+
+    return None
