@@ -4,7 +4,13 @@ from formatter import format_post
 
 def generate_post():
 
-    place = get_random_place()
+    import random
+from places import PLACES
+from wikipedia_source import get_summary
+
+title = random.choice(PLACES)
+
+place = get_summary(title)
 
     if place is None:
         print("❌ هیچ مکانی پیدا نشد")
